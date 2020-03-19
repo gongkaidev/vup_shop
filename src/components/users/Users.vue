@@ -102,7 +102,7 @@
                 size="mini"
                 type="warning"
                 icon="el-icon-setting"
-                @click="handle(scope.$index, scope.row)"
+                @click="setRole(scope.$index, scope.row)"
                 style="margin-left: 5px;"
               ></el-button>
             </el-tooltip>
