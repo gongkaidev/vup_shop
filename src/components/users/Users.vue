@@ -57,55 +57,30 @@
             <el-switch v-model="scope.row.mg_state" @change="changeUserStatus(scope.row)"></el-switch>
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="操作" width="180px">
+        <el-table-column label="操作" width="220px">
           <template slot-scope="scope">
-            <el-tooltip content="修改" placement="top">
-              <el-button
-                size="mini"
-                type="primary"
-                icon="el-icon-edit"
-                @click="handleEdit(scope.$index, scope.row)"
-                style="margin-left: 5px;"
-              ></el-button>
-            </el-tooltip>
-            <el-dialog title="修改用户" :visible.sync="modifyFormVisible">
-              <el-form :model="modifyForm" :rules="modifyFormRules" ref="modifyForm" status-icon>
-                <el-form-item label="用户ID" :label-width="formLabelWidth" prop="id">
-                  <el-input v-model="modifyForm.id" autocomplete="off" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="用户名称" :label-width="formLabelWidth" prop="username">
-                  <el-input v-model="modifyForm.username" autocomplete="off" :disabled="true"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-                  <el-input v-model="modifyForm.email" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="手机号" :label-width="formLabelWidth" prop="mobile">
-                  <el-input v-model="modifyForm.mobile" autocomplete="off"></el-input>
-                </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="modifyFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="modifyUserForm">确 定</el-button>
-              </div>
-            </el-dialog>
-            <el-tooltip content="删除" placement="top" :enterable="false">
-              <el-button
-                size="mini"
-                type="danger"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.$index, scope.row)"
-                style="margin-left: 5px;"
-              ></el-button>
-            </el-tooltip>
-            <el-tooltip content="分配角色" placement="top" :hide-after="500">
-              <el-button
-                size="mini"
-                type="warning"
-                icon="el-icon-setting"
-                @click="setRole(scope.$index, scope.row)"
-                style="margin-left: 5px;"
-              ></el-button>
-            </el-tooltip>
+            <el-button
+              size="mini"
+              type="primary"
+              icon="el-icon-edit"
+              @click="handleEdit(scope.$index, scope.row)"
+              style="margin-left: 10px;"
+            ></el-button>
+
+            <el-button
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.$index, scope.row)"
+              style="margin-left: 10px;"
+            ></el-button>
+
+            <el-button
+              size="mini"
+              type="warning"
+              @click="setRole(scope.$index, scope.row)"
+              style="margin-left: 10px;"
+            >设置角色</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -121,6 +96,49 @@
         ></el-pagination>
       </div>
     </el-card>
+
+    <el-dialog title="修改用户" :visible.sync="modifyFormVisible">
+      <el-form :model="modifyForm" :rules="modifyFormRules" ref="modifyForm" status-icon>
+        <el-form-item label="用户ID" :label-width="formLabelWidth" prop="id">
+          <el-input v-model="modifyForm.id" autocomplete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="用户名称" :label-width="formLabelWidth" prop="username">
+          <el-input v-model="modifyForm.username" autocomplete="off" :disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+          <el-input v-model="modifyForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" :label-width="formLabelWidth" prop="mobile">
+          <el-input v-model="modifyForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="modifyFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="modifyUserForm">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog title="设置角色" :visible.sync="setRoleVisible">
+      <div>
+        <p>用户名称: {{userInfo.username}}</p>
+        <p>用户角色: {{userInfo.role_name}}</p>
+        <div>
+          用户角色:
+          <el-select v-model="value" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="setRoleVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitRole">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -152,9 +170,12 @@ export default {
         pagesize: 2
       },
       total: 0,
+      userInfo: {},
+      roleList: [],
       dialogFormVisible: false,
       modifyFormVisible: false,
       deleteFormVisible: false,
+      setRoleVisible: false,
       formLabelWidth: '120px',
       addForm: {
         username: '',
@@ -198,7 +219,8 @@ export default {
           }
         ],
         mobile: [{ validator: checkMoblie, trigger: ['blur', 'change'] }]
-      }
+      },
+      value: ''
     }
   },
   created() {
@@ -253,6 +275,7 @@ export default {
       })
       this.userList = res.data.users
       this.total = res.data.total
+      console.log(res.data.users)
     },
     // 修改用户状态
     async changeUserStatus(userInfo) {
@@ -310,6 +333,28 @@ export default {
           return false
         }
       })
+    },
+    // 设置角色
+    async setRole(index, row) {
+      this.setRoleVisible = true
+      const { data: res } = await this.$http.get('roles')
+      // 角色列表 角色id roleName
+      this.roleList = res.data
+      // 用户列表  用户id 用户角色名
+      this.userInfo = row
+      // console.log(res.data)
+    },
+    // 提交角色设置
+    async submitRole() {
+      await this.$http.put(`users/${this.userInfo.id}/role`, {
+        id: this.userInfo.id,
+        rid: this.value
+      })
+      // const { data: roleRes } = await this.$http.get('roles/' + res.role_id)
+      // this.userList.role_name = roleRes.roleName
+      this.setRoleVisible = false
+      this.getUserList()
+      // console.log(res.role_id)
     }
   }
 }
