@@ -24,26 +24,6 @@
             style="margin-left: 15px;"
             @click="dialogFormVisible = true"
           >添加用户</el-button>
-          <el-dialog title="添加用户" :visible.sync="dialogFormVisible" :before-close="addFormClose">
-            <el-form :model="addForm" :rules="addFormRules" ref="addForm" status-icon>
-              <el-form-item label="用户名称" :label-width="formLabelWidth" prop="username">
-                <el-input v-model="addForm.username" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="用户密码" :label-width="formLabelWidth" prop="password">
-                <el-input v-model="addForm.password" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-                <el-input v-model="addForm.email" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="手机号" :label-width="formLabelWidth" prop="mobile">
-                <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
-              </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button @click="dialogFormVisible = false">取 消</el-button>
-              <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
-            </div>
-          </el-dialog>
         </el-col>
       </el-row>
       <el-table :data="userList" border stripe style="width: 100%">
@@ -97,6 +77,26 @@
       </div>
     </el-card>
 
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible" :before-close="addFormClose">
+      <el-form :model="addForm" :rules="addFormRules" ref="addForm" status-icon>
+        <el-form-item label="用户名称" :label-width="formLabelWidth" prop="username">
+          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="用户密码" :label-width="formLabelWidth" prop="password">
+          <el-input v-model="addForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" :label-width="formLabelWidth" prop="mobile">
+          <el-input v-model="addForm.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-dialog title="修改用户" :visible.sync="modifyFormVisible">
       <el-form :model="modifyForm" :rules="modifyFormRules" ref="modifyForm" status-icon>
         <el-form-item label="用户ID" :label-width="formLabelWidth" prop="id">
@@ -164,6 +164,7 @@ export default {
     }
     return {
       userList: [],
+      // 分页 当前页 每页显示数量
       queryInfo: {
         query: '',
         pagenum: 1,
@@ -172,11 +173,13 @@ export default {
       total: 0,
       userInfo: {},
       roleList: [],
+      // 对话框显示状态
       dialogFormVisible: false,
       modifyFormVisible: false,
       deleteFormVisible: false,
       setRoleVisible: false,
       formLabelWidth: '120px',
+      // 添加用户
       addForm: {
         username: '',
         password: '',
@@ -307,6 +310,7 @@ export default {
         }
       })
     },
+    // 关闭对话框的表单
     addFormClose() {
       this.$refs.addForm.resetFields()
     },
