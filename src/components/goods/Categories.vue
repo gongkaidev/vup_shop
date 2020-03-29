@@ -84,16 +84,16 @@
         border
         :show-row-hover="false"
       >
-        <template slot="valid" scope="scope">
+        <template slot="valid" slot-scope="scope">
           <i class="el-icon-success" style="color:lightgreen;" v-if="!scope.row.cat_deleted"></i>
           <i class="el-icon-error" style="color:red;" v-if="scope.row.cat_deleted"></i>
         </template>
-        <template slot="level" scope="scope">
+        <template slot="level" slot-scope="scope">
           <el-tag v-if="scope.row.cat_level=='0'">一级</el-tag>
           <el-tag type="success" v-if="scope.row.cat_level=='1'">二级</el-tag>
           <el-tag type="warning" v-if="scope.row.cat_level=='2'">三级</el-tag>
         </template>
-        <template slot="settings" scope="scope">
+        <template slot="settings" slot-scope="scope">
           <el-button
             size="mini"
             type="primary"
@@ -164,7 +164,7 @@
           <el-cascader
             v-model="selectedkeys"
             :options="parentCatList"
-            :props="casProps"
+            :props="catProps"
             @change="parentCatChange"
             clearable
           ></el-cascader>
@@ -231,7 +231,7 @@ export default {
           template: 'settings'
         }
       ],
-      casProps: {
+      catProps: {
         value: 'cat_id',
         label: 'cat_name',
         chidren: 'children',
