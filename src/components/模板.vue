@@ -96,21 +96,26 @@ export default {
       getAddList: [],
       addVisible: false,
       addForm: [],
-      addFormRules: {},
+      addFormRules: {
+        name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }]
+      },
       // 渲染列表
       List: []
     }
   },
+  created() {
+    this.getList()
+  },
   methods: {
     // 获取列表
-    getList() {},
+    async getList() {},
     submitAddForm() {
       // this.$refs.addForm
     },
     // 表格内修改功能
-    Edit(index, row) {},
-    // 添加功能
-    Delete(idnex, row) {},
+    async Edit(index, row) {},
+    // 删除功能
+    async Delete(index, row) {},
 
     // 分页
     // 监听pagesize 改变的事件
@@ -118,13 +123,13 @@ export default {
       this.queryInfo.pagesize = newSize
       // console.log(`每页 ${val} 条`)
       // 重新获取数据
-      this.getUserList()
+      this.getList()
     },
     // 监听页码值改变
     handleCurrentChange(val) {
       this.queryInfo.pagenum = val
       // 重新获取数据
-      this.getUserList()
+      this.getList()
     },
     // 关闭对话框的表单
     addFormClose() {
